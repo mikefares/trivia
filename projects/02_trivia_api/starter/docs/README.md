@@ -134,6 +134,36 @@ The API will return four error types when there is any failure and they are:
 }
 ```
 
+### GET '/categories/<category_id>/questions'
+- General:
+    - Returns the current category, a list of question objects in the specified category, success value and total number of questions in that category.
+    - Results are paginated in groups of 10.
+
+- Sample: `curl http://127.0.0.1:5000/categories/6/questions`
+```
+{
+  "current_category": "Sports",
+  "questions": [
+    {
+      "answer": "Brazil",
+      "category": 6,
+      "difficulty": 3,
+      "id": 10,
+      "question": "Which is the only team to play in every soccer World Cup tournament?"
+    },
+    {
+      "answer": "Uruguay",
+      "category": 6,
+      "difficulty": 4,
+      "id": 11,
+      "question": "Which country won the first ever soccer World Cup in 1930?"
+    }
+  ],
+  "success": true,
+  "total_questions": 2
+}
+```
+
 ### DELETE '/questions/{question_id}'
 - General:
     - Deletes the question of the given ID if it exist.
@@ -185,33 +215,23 @@ The API will return four error types when there is any failure and they are:
 }
 ```
 
-### GET '/categories/<category_id>/questions'
+### POST '/quizzes'
 - General:
-    - Returns the current category, a list of question objects in the specified category, success value and total number of questions in that category.
-    - Results are paginated in groups of 10.
+    - Allows user to specify a category
+    - Returns questions for user to answer based on specified category and success value
+    - Returns a score after answering 5 questions (This can only be seen on the frontend)
 
-- Sample: `curl http://127.0.0.1:5000/categories/6/questions`
+- Sample: `curl -X POST http://localhost:5000/quizzes -H "Content-Type: application/json" -d "{\"previous_questions\": [0], \"quiz_category\": {\"type\": \"Art\", \"id\": 2}}"`
 ```
 {
-  "current_category": "Sports",
-  "questions": [
-    {
-      "answer": "Brazil",
-      "category": 6,
-      "difficulty": 3,
-      "id": 10,
-      "question": "Which is the only team to play in every soccer World Cup tournament?"
-    },
-    {
-      "answer": "Uruguay",
-      "category": 6,
-      "difficulty": 4,
-      "id": 11,
-      "question": "Which country won the first ever soccer World Cup in 1930?"
-    }
-  ],
-  "success": true,
-  "total_questions": 2
+  "question": {
+    "answer": "Jackson Pollock",
+    "category": 2,
+    "difficulty": 2,
+    "id": 19,
+    "question": "Which American artist was a pioneer of Abstract Expressionism, and a leading exponent of action painting?"
+  },
+  "success": true
 }
 ```
 

@@ -228,34 +228,26 @@ def create_app(test_config=None):
     try:
       body = request.get_json()
 
-      previous_questions = body.get("previous_questions", None)
-      quiz_category = body.get("quiz_category", None)
-      category_id = quiz_category['id']
+      previous_questions = body.get('previous_questions')
+      quiz_category = body.get('quiz_category')      
 
-      if quiz_category:
-        selection = Question.query.filter(Question.category == category_id).all()
-        
-        if category_id == 0:
-          selection = Question.query.order_by(Question.id).all()
+      if quiz_category['type'] == 'click':
+        selection = Question.query.filter(Question.id.not_in((previous_questions))).all()
 
-      ids = [question.id for question in selection]
-      randomized = random.choice([number for number in ids if number not in previous_questions])
+      else:
+        selection = Question.query.filter(Question.category == quiz_category['id'], Question.id.not_in((previous_questions))).all()
 
-      question = Question.query.filter(Question.id == randomized).one_or_none()
-      random_question = question.format()
-      previous_questions.append(question.id)
-      print('count previous_quetions', len(previous_questions))
-      return jsonify(
-          {
-              'success': True,
-              'question': random_question
-          }
-      )
-      
+      next_question = selection[random.randrange(0, len(selection))].format() if len(selection) > 0 else None
+
+      return jsonify({
+        'success': True,
+        'question': next_question
+      })
+  
     except:
       abort(422)
 
-      
+
 
 
   '''
