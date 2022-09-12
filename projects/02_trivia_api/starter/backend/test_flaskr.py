@@ -3,6 +3,7 @@ from re import search
 import unittest
 import json
 from flask_sqlalchemy import SQLAlchemy
+from settings import DB_NAME, DB_USER, DB_PASSWORD
 
 from flaskr import create_app
 from models import setup_db, Question, Category
@@ -16,13 +17,11 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        database_user = "postgres"
-        database_password = "Admin123"
-        self.database_path = "postgresql://{}:{}@{}/{}".format(database_user, database_password, 'localhost:5432', self.database_name)
+        self.database_path = "postgresql://{}/{}".format('localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
         self.new_question = {'question': 'This is a test question', 'answer': 'The answer is yes', 'difficulty': 5, 'category': 4}
-        self.next_quiz_question = {'previous_questions': [], 'quiz_category': {"type": "Art", "id": 2}}
+        self.next_quiz_question = {'previous_questions': [], 'quiz_category': {'type': 'Entertainment', 'id': 5}}
         
         # binds the app to the current context
         with self.app.app_context():

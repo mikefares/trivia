@@ -6,6 +6,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+from settings import DB_NAME, DB_USER, DB_PASSWORD
 
 from models import setup_db, Question, Category
 
@@ -224,28 +225,34 @@ def create_app(test_config=None):
   and shown whether they were correct or not. 
   '''
   @app.route('/quizzes', methods=['POST'])
-  def play_quiz():
+  def play_quiz(): 
     try:
       body = request.get_json()
 
       previous_questions = body.get('previous_questions')
-      quiz_category = body.get('quiz_category')      
+      quiz_category = body.get('quiz_category')
 
-      if quiz_category['type'] == 'click':
-        selection = Question.query.filter(Question.id.not_in((previous_questions))).all()
+      if quiz_category['id']:
+        selection = Question.query.filter_by(category = quiz_category['id']).all()
 
       else:
-        selection = Question.query.filter(Question.category == quiz_category['id'], Question.id.not_in((previous_questions))).all()
-
-      next_question = selection[random.randrange(0, len(selection))].format() if len(selection) > 0 else None
-
+        selection = Question.query.all()
+      
+      ids = [question.id for question in selection]
+      randomized = random.choice([number for number in ids if number not in previous_questions])
+      
+      next_question = Question.query.filter_by(id = randomized).one_or_none()
+      previous_questions += ({next_question.id})
+      
       return jsonify({
         'success': True,
-        'question': next_question
+        'question': next_question.format()
       })
-  
+
     except:
       abort(422)
+
+    
 
 
 
